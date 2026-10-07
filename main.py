@@ -188,6 +188,27 @@ def search_prompt():
     print(f"{len(found)}개의 프롬프트를 찾았습니다.")
 
 
+def show_detail():
+    """번호를 입력받아 프롬프트의 전체 내용을 출력한다."""
+    print()
+    print("=== 프롬프트 상세 보기 ===")
+    choice = input("번호 입력: ").strip()
+    if not (choice.isdigit() and 1 <= int(choice) <= len(PROMPTS)):
+        print(f"잘못된 번호입니다. 1~{len(PROMPTS)} 사이의 번호를 입력하세요.")
+        return
+    p = PROMPTS[int(choice) - 1]
+    line = "―" * 24
+    print()
+    print(line)
+    print(f"제목: {p['title']}")
+    print(f"카테고리: {p['category']}")
+    print(f"즐겨찾기: {'⭐' if p['favorite'] else '없음'}")
+    print(line)
+    print("내용:")
+    print(p["content"])
+    print(line)
+
+
 def show_menu():
     """메뉴를 출력한다."""
     print()
@@ -210,6 +231,7 @@ def main():
         "2": show_list,
         "3": show_by_category,
         "4": search_prompt,
+        "5": show_detail,
     }
     while True:
         show_menu()

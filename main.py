@@ -14,7 +14,7 @@ EXPORT_DIR = "prompts_export"
 # 미리 정의된 카테고리 (추가 시 번호로 선택하거나 직접 입력)
 CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
 
-# 프롬프트 데이터: 리스트 안에 딕셔너리 (title / content / category / favorite)
+# 프롬프트 데이터: 리스트 안에 딕셔너리 (title / content / category / favorite / views)
 PROMPTS = [
     {
         "title": "정리봇 v1 — 회의록 요약 (B1)",
@@ -24,6 +24,7 @@ PROMPTS = [
         ),
         "category": "텍스트 생성",
         "favorite": False,
+        "views": 0,
     },
     {
         "title": "정리봇 v2.1 — 시스템 프롬프트 (B1 최종)",
@@ -49,6 +50,7 @@ PROMPTS = [
         ),
         "category": "페르소나",
         "favorite": True,
+        "views": 0,
     },
     {
         "title": "회의록 공통 입력 템플릿 (B1)",
@@ -62,6 +64,7 @@ PROMPTS = [
         ),
         "category": "텍스트 생성",
         "favorite": False,
+        "views": 0,
     },
     {
         "title": "담당자 알림 메일 템플릿 — 문의 유형별 (B3)",
@@ -73,6 +76,7 @@ PROMPTS = [
         ),
         "category": "자동화",
         "favorite": False,
+        "views": 0,
     },
     {
         "title": "학생 접수 확인 메일 템플릿 (B3)",
@@ -89,6 +93,7 @@ PROMPTS = [
         ),
         "category": "자동화",
         "favorite": True,
+        "views": 0,
     },
 ]
 
@@ -163,6 +168,7 @@ def add_prompt():
         "content": content,
         "category": category,
         "favorite": False,
+        "views": 0,
     })
     print()
     print(f"'{title}' 프롬프트가 추가되었습니다! (현재 {len(PROMPTS)}개)")
@@ -231,12 +237,14 @@ def show_detail():
     if index is None:
         return
     p = PROMPTS[index]
+    p["views"] += 1  # 보너스 2: 상세 보기 때마다 조회수 기록
     line = "―" * 24
     print()
     print(line)
     print(f"제목: {p['title']}")
     print(f"카테고리: {p['category']}")
     print(f"즐겨찾기: {'⭐' if p['favorite'] else '없음'}")
+    print(f"조회수: {p['views']}")
     print(line)
     print("내용:")
     print(p["content"])
@@ -305,6 +313,7 @@ def load_json(quiet=False):
             "content": str(item["content"]),
             "category": str(item.get("category", "기타")),
             "favorite": bool(item.get("favorite", False)),
+            "views": int(item.get("views", 0)),
         })
     PROMPTS[:] = loaded
     print(f"'{DATA_FILE}'에서 {len(PROMPTS)}개의 프롬프트를 불러왔습니다.")
@@ -336,7 +345,7 @@ def export_markdown():
     print(f"{len(by_category)}개 카테고리를 '{EXPORT_DIR}/' 폴더에 내보냈습니다.")
 
 
-# ---------- 보너스 2: 수정·삭제 ----------
+# ---------- 보너스 2: 수정·삭제·조회수 ----------
 
 def edit_prompt():
     """번호를 입력받아 제목·내용·카테고리를 수정한다. 비워 두면 기존 값을 유지한다."""
@@ -376,6 +385,19 @@ def delete_prompt():
     print(f"'{p['title']}' 프롬프트를 삭제했습니다. (남은 {len(PROMPTS)}개)")
 
 
+def show_top(limit=5):
+    """조회수가 많은 순서로 상위 프롬프트를 출력한다."""
+    print()
+    print(f"=== 조회수 Top {limit} ===")
+    viewed = [(i, p) for i, p in enumerate(PROMPTS, start=1) if p["views"] > 0]
+    if not viewed:
+        print("아직 조회한 프롬프트가 없습니다. 5번 메뉴에서 상세 보기를 하면 기록됩니다.")
+        return
+    viewed.sort(key=lambda item: item[1]["views"], reverse=True)
+    for rank, (i, p) in enumerate(viewed[:limit], start=1):
+        print(f"{rank}위  {p['views']}회  #{i} [{p['category']}] {p['title']}{star(p)}")
+
+
 # ---------- 메뉴 ----------
 
 MENU = [
@@ -391,6 +413,7 @@ MENU = [
     ("10", "Markdown 내보내기", export_markdown),
     ("11", "프롬프트 수정", edit_prompt),
     ("12", "프롬프트 삭제", delete_prompt),
+    ("13", "조회수 Top 5", show_top),
 ]
 
 

@@ -127,6 +127,20 @@ def add_prompt():
     print(f"'{title}' 프롬프트가 추가되었습니다! (현재 {len(PROMPTS)}개)")
 
 
+def show_list():
+    """저장된 모든 프롬프트를 번호·카테고리·제목·즐겨찾기(⭐)와 함께 출력한다."""
+    print()
+    print("=== 프롬프트 목록 ===")
+    if not PROMPTS:
+        print("등록된 프롬프트가 없습니다. 1번 메뉴에서 추가하세요.")
+        return
+    for i, p in enumerate(PROMPTS, start=1):
+        star = " ⭐" if p["favorite"] else ""
+        print(f"{i}. [{p['category']}] {p['title']}{star}")
+    print()
+    print(f"총 {len(PROMPTS)}개의 프롬프트")
+
+
 def show_menu():
     """메뉴를 출력한다."""
     print()
@@ -146,6 +160,7 @@ def main():
     # 번호 → 기능 함수. 기능은 다음 커밋부터 하나씩 채운다.
     actions = {
         "1": add_prompt,
+        "2": show_list,
     }
     while True:
         show_menu()

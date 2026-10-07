@@ -86,5 +86,35 @@ PROMPTS = [
 ]
 
 
+def show_menu():
+    """메뉴를 출력한다."""
+    print()
+    print("=== 프롬프트 관리 프로그램 (에너지인력양성센터) ===")
+    print("1. 프롬프트 추가")
+    print("2. 프롬프트 목록")
+    print("3. 카테고리별 조회")
+    print("4. 프롬프트 검색")
+    print("5. 프롬프트 상세 보기")
+    print("6. 즐겨찾기 추가/해제")
+    print("7. 즐겨찾기 목록")
+    print("0. 종료")
+
+
+def main():
+    """메뉴를 반복 출력하고 번호에 맞는 기능을 실행한다."""
+    # 번호 → 기능 함수. 기능은 다음 커밋부터 하나씩 채운다.
+    actions = {}
+    while True:
+        show_menu()
+        choice = input("선택: ").strip()
+        if choice == "0":
+            print("프로그램을 종료합니다.")
+            break
+        if choice in actions:
+            actions[choice]()
+        else:
+            print("잘못된 번호입니다. 메뉴에 있는 번호를 입력하세요.")
+
+
 if __name__ == "__main__":
-    print(f"등록된 기본 프롬프트: {len(PROMPTS)}개")
+    main()

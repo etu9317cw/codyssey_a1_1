@@ -165,6 +165,29 @@ def show_by_category():
     print(f"총 {len(found)}개의 프롬프트")
 
 
+def search_prompt():
+    """키워드가 제목 또는 내용에 포함된 프롬프트를 대소문자 구분 없이 찾는다."""
+    print()
+    print("=== 프롬프트 검색 ===")
+    keyword = input("검색어: ").strip().lower()
+    if not keyword:
+        print("검색어가 비어 있습니다.")
+        return
+    found = [
+        (i, p) for i, p in enumerate(PROMPTS, start=1)
+        if keyword in p["title"].lower() or keyword in p["content"].lower()
+    ]
+    print()
+    if not found:
+        print(f"'{keyword}'이(가) 포함된 프롬프트가 없습니다.")
+        return
+    print("검색 결과:")
+    for i, p in found:
+        star = " ⭐" if p["favorite"] else ""
+        print(f"{i}. [{p['category']}] {p['title']}{star}")
+    print(f"{len(found)}개의 프롬프트를 찾았습니다.")
+
+
 def show_menu():
     """메뉴를 출력한다."""
     print()
@@ -186,6 +209,7 @@ def main():
         "1": add_prompt,
         "2": show_list,
         "3": show_by_category,
+        "4": search_prompt,
     }
     while True:
         show_menu()

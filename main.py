@@ -310,6 +310,32 @@ def load_json(quiet=False):
     print(f"'{DATA_FILE}'에서 {len(PROMPTS)}개의 프롬프트를 불러왔습니다.")
 
 
+def export_markdown():
+    """전체 프롬프트를 카테고리별 Markdown 파일(prompts_export/<카테고리>.md)로 내보낸다."""
+    if not PROMPTS:
+        print("내보낼 프롬프트가 없습니다.")
+        return
+    os.makedirs(EXPORT_DIR, exist_ok=True)
+    by_category = {}
+    for p in PROMPTS:
+        by_category.setdefault(p["category"], []).append(p)
+    for category, items in by_category.items():
+        safe_name = category.replace("/", "_").replace("\\", "_")
+        path = os.path.join(EXPORT_DIR, f"{safe_name}.md")
+        lines = [f"# {category}", "", f"프롬프트 {len(items)}개", ""]
+        for p in items:
+            lines.append(f"## {p['title']}{star(p)}")
+            lines.append("")
+            lines.append("```")
+            lines.append(p["content"])
+            lines.append("```")
+            lines.append("")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
+        print(f"  {path} ({len(items)}개)")
+    print(f"{len(by_category)}개 카테고리를 '{EXPORT_DIR}/' 폴더에 내보냈습니다.")
+
+
 # ---------- 메뉴 ----------
 
 MENU = [
@@ -322,6 +348,7 @@ MENU = [
     ("7", "즐겨찾기 목록", show_favorites),
     ("8", "JSON 저장", save_json),
     ("9", "JSON 불러오기", load_json),
+    ("10", "Markdown 내보내기", export_markdown),
 ]
 
 

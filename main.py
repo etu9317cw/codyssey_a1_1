@@ -4,6 +4,13 @@
 기본 데이터는 이전 미션(B1 정리봇, B3 문의 자동화)에서 작성한 프롬프트다.
 """
 
+import json
+import os
+
+# 보너스 1: 저장 파일과 내보내기 폴더
+DATA_FILE = "prompts.json"
+EXPORT_DIR = "prompts_export"
+
 # 미리 정의된 카테고리 (추가 시 번호로 선택하거나 직접 입력)
 CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
 
@@ -265,6 +272,44 @@ def show_favorites():
     print(f"총 {len(found)}개의 즐겨찾기")
 
 
+# ---------- 보너스 1: 영속화·내보내기 ----------
+
+def save_json():
+    """프롬프트 전체를 JSON 파일로 저장한다."""
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(PROMPTS, f, ensure_ascii=False, indent=2)
+    print(f"{len(PROMPTS)}개의 프롬프트를 '{DATA_FILE}'에 저장했습니다.")
+
+
+def load_json(quiet=False):
+    """JSON 파일을 읽어 프롬프트 리스트를 교체한다. 파일이 없거나 형식이 잘못되면 안내한다."""
+    if not os.path.exists(DATA_FILE):
+        if not quiet:
+            print(f"'{DATA_FILE}' 파일이 없습니다. 먼저 저장하세요.")
+        return
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        print(f"'{DATA_FILE}'을 읽지 못했습니다: {e}")
+        return
+    if not isinstance(data, list):
+        print(f"'{DATA_FILE}' 형식이 잘못되었습니다. (리스트가 아님)")
+        return
+    loaded = []
+    for item in data:
+        if not isinstance(item, dict) or "title" not in item or "content" not in item:
+            continue
+        loaded.append({
+            "title": str(item["title"]),
+            "content": str(item["content"]),
+            "category": str(item.get("category", "기타")),
+            "favorite": bool(item.get("favorite", False)),
+        })
+    PROMPTS[:] = loaded
+    print(f"'{DATA_FILE}'에서 {len(PROMPTS)}개의 프롬프트를 불러왔습니다.")
+
+
 # ---------- 메뉴 ----------
 
 MENU = [
@@ -275,6 +320,8 @@ MENU = [
     ("5", "프롬프트 상세 보기", show_detail),
     ("6", "즐겨찾기 추가/해제", toggle_favorite),
     ("7", "즐겨찾기 목록", show_favorites),
+    ("8", "JSON 저장", save_json),
+    ("9", "JSON 불러오기", load_json),
 ]
 
 
@@ -290,6 +337,7 @@ def show_menu():
 def main():
     """메뉴를 반복 출력하고 번호에 맞는 기능을 실행한다."""
     actions = {number: func for number, _, func in MENU}
+    load_json(quiet=True)  # 저장 파일이 있으면 시작할 때 불러온다
     while True:
         show_menu()
         choice = input("선택: ").strip()

@@ -336,6 +336,46 @@ def export_markdown():
     print(f"{len(by_category)}개 카테고리를 '{EXPORT_DIR}/' 폴더에 내보냈습니다.")
 
 
+# ---------- 보너스 2: 수정·삭제 ----------
+
+def edit_prompt():
+    """번호를 입력받아 제목·내용·카테고리를 수정한다. 비워 두면 기존 값을 유지한다."""
+    print()
+    print("=== 프롬프트 수정 ===")
+    index = input_number("수정할 번호 입력: ", len(PROMPTS))
+    if index is None:
+        return
+    p = PROMPTS[index]
+    print("(비워 두고 Enter를 누르면 기존 값을 유지합니다)")
+    title = input(f"제목 [{p['title']}]: ").strip()
+    content = input("내용 [기존 내용 유지]: ").strip()
+    change = input(f"카테고리 [{p['category']}] 를 바꾸시겠습니까? (y/n): ").strip().lower()
+    if title:
+        p["title"] = title
+    if content:
+        p["content"] = content
+    if change == "y":
+        print("카테고리 선택:")
+        p["category"] = select_category(allow_custom=True)
+    print(f"'{p['title']}' 프롬프트를 수정했습니다.")
+
+
+def delete_prompt():
+    """번호를 입력받아 확인 후 프롬프트를 삭제한다."""
+    print()
+    print("=== 프롬프트 삭제 ===")
+    index = input_number("삭제할 번호 입력: ", len(PROMPTS))
+    if index is None:
+        return
+    p = PROMPTS[index]
+    answer = input(f"'{p['title']}' 프롬프트를 정말 삭제할까요? (y/n): ").strip().lower()
+    if answer != "y":
+        print("삭제를 취소했습니다.")
+        return
+    PROMPTS.pop(index)
+    print(f"'{p['title']}' 프롬프트를 삭제했습니다. (남은 {len(PROMPTS)}개)")
+
+
 # ---------- 메뉴 ----------
 
 MENU = [
@@ -349,6 +389,8 @@ MENU = [
     ("8", "JSON 저장", save_json),
     ("9", "JSON 불러오기", load_json),
     ("10", "Markdown 내보내기", export_markdown),
+    ("11", "프롬프트 수정", edit_prompt),
+    ("12", "프롬프트 삭제", delete_prompt),
 ]
 
 

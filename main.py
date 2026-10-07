@@ -86,6 +86,8 @@ PROMPTS = [
 ]
 
 
+# ---------- 공통 헬퍼 ----------
+
 def input_required(label):
     """빈 값이면 다시 입력을 요청한다."""
     while True:
@@ -95,28 +97,60 @@ def input_required(label):
         print("비어 있습니다. 다시 입력하세요.")
 
 
+def input_number(label, max_n):
+    """1~max_n 범위의 번호를 입력받아 0부터 시작하는 인덱스로 돌려준다. 잘못되면 None."""
+    choice = input(label).strip()
+    if choice.isdigit() and 1 <= int(choice) <= max_n:
+        return int(choice) - 1
+    print(f"잘못된 번호입니다. 1~{max_n} 사이의 번호를 입력하세요.")
+    return None
+
+
+def star(p):
+    """즐겨찾기면 ' ⭐', 아니면 빈 문자열."""
+    return " ⭐" if p["favorite"] else ""
+
+
+def print_prompt_line(number, p, with_category=True):
+    """목록 한 줄 출력: '번호. [카테고리] 제목 ⭐'"""
+    category = f"[{p['category']}] " if with_category else ""
+    print(f"{number}. {category}{p['title']}{star(p)}")
+
+
+def print_categories():
+    """카테고리 목록을 '1) 이름' 형식으로 출력한다."""
+    for i, name in enumerate(CATEGORIES, start=1):
+        print(f"{i}) {name}")
+
+
+def select_category(allow_custom=False):
+    """카테고리를 번호로 고르게 한다. allow_custom이면 직접 입력 항목을 추가한다."""
+    print_categories()
+    custom_no = len(CATEGORIES) + 1
+    if allow_custom:
+        print(f"{custom_no}) 직접 입력")
+    while True:
+        choice = input("선택: ").strip()
+        if choice.isdigit() and 1 <= int(choice) <= len(CATEGORIES):
+            return CATEGORIES[int(choice) - 1]
+        if allow_custom and choice == str(custom_no):
+            return input_required("카테고리 이름: ")
+        if not allow_custom:
+            return None
+        print("잘못된 번호입니다. 다시 선택하세요.")
+
+
+# ---------- 기능 ----------
+
 def add_prompt():
     """제목·내용·카테고리를 입력받아 새 프롬프트를 리스트에 추가한다."""
     print()
     print("=== 프롬프트 추가 ===")
     title = input_required("제목: ")
     content = input_required("내용: ")
-
     print()
     print("카테고리 선택:")
-    for i, name in enumerate(CATEGORIES, start=1):
-        print(f"{i}) {name}")
-    print(f"{len(CATEGORIES) + 1}) 직접 입력")
-    while True:
-        choice = input("선택: ").strip()
-        if choice.isdigit() and 1 <= int(choice) <= len(CATEGORIES):
-            category = CATEGORIES[int(choice) - 1]
-            break
-        if choice == str(len(CATEGORIES) + 1):
-            category = input_required("카테고리 이름: ")
-            break
-        print("잘못된 번호입니다. 다시 선택하세요.")
-
+    category = select_category(allow_custom=True)
     PROMPTS.append({
         "title": title,
         "content": content,
@@ -135,8 +169,7 @@ def show_list():
         print("등록된 프롬프트가 없습니다. 1번 메뉴에서 추가하세요.")
         return
     for i, p in enumerate(PROMPTS, start=1):
-        star = " ⭐" if p["favorite"] else ""
-        print(f"{i}. [{p['category']}] {p['title']}{star}")
+        print_prompt_line(i, p)
     print()
     print(f"총 {len(PROMPTS)}개의 프롬프트")
 
@@ -145,13 +178,10 @@ def show_by_category():
     """카테고리를 선택하면 그 카테고리의 프롬프트만 출력한다."""
     print()
     print("=== 카테고리별 조회 ===")
-    for i, name in enumerate(CATEGORIES, start=1):
-        print(f"{i}) {name}")
-    choice = input("선택: ").strip()
-    if not (choice.isdigit() and 1 <= int(choice) <= len(CATEGORIES)):
+    category = select_category()
+    if category is None:
         print("잘못된 번호입니다.")
         return
-    category = CATEGORIES[int(choice) - 1]
     found = [p for p in PROMPTS if p["category"] == category]
     print()
     print(f"[{category}] 카테고리 프롬프트:")
@@ -159,8 +189,7 @@ def show_by_category():
         print("이 카테고리에는 프롬프트가 없습니다.")
         return
     for i, p in enumerate(found, start=1):
-        star = " ⭐" if p["favorite"] else ""
-        print(f"{i}. {p['title']}{star}")
+        print_prompt_line(i, p, with_category=False)
     print()
     print(f"총 {len(found)}개의 프롬프트")
 
@@ -183,8 +212,7 @@ def search_prompt():
         return
     print("검색 결과:")
     for i, p in found:
-        star = " ⭐" if p["favorite"] else ""
-        print(f"{i}. [{p['category']}] {p['title']}{star}")
+        print_prompt_line(i, p)
     print(f"{len(found)}개의 프롬프트를 찾았습니다.")
 
 
@@ -192,11 +220,10 @@ def show_detail():
     """번호를 입력받아 프롬프트의 전체 내용을 출력한다."""
     print()
     print("=== 프롬프트 상세 보기 ===")
-    choice = input("번호 입력: ").strip()
-    if not (choice.isdigit() and 1 <= int(choice) <= len(PROMPTS)):
-        print(f"잘못된 번호입니다. 1~{len(PROMPTS)} 사이의 번호를 입력하세요.")
+    index = input_number("번호 입력: ", len(PROMPTS))
+    if index is None:
         return
-    p = PROMPTS[int(choice) - 1]
+    p = PROMPTS[index]
     line = "―" * 24
     print()
     print(line)
@@ -213,11 +240,10 @@ def toggle_favorite():
     """번호를 입력받아 즐겨찾기를 추가하거나 해제한다."""
     print()
     print("=== 즐겨찾기 추가/해제 ===")
-    choice = input("프롬프트 번호 입력: ").strip()
-    if not (choice.isdigit() and 1 <= int(choice) <= len(PROMPTS)):
-        print(f"잘못된 번호입니다. 1~{len(PROMPTS)} 사이의 번호를 입력하세요.")
+    index = input_number("프롬프트 번호 입력: ", len(PROMPTS))
+    if index is None:
         return
-    p = PROMPTS[int(choice) - 1]
+    p = PROMPTS[index]
     p["favorite"] = not p["favorite"]
     if p["favorite"]:
         print(f"'{p['title']}' 프롬프트를 즐겨찾기에 추가했습니다!")
@@ -234,37 +260,36 @@ def show_favorites():
         print("즐겨찾기한 프롬프트가 없습니다. 6번 메뉴에서 추가하세요.")
         return
     for i, p in found:
-        print(f"{i}. [{p['category']}] {p['title']} ⭐")
+        print_prompt_line(i, p)
     print()
     print(f"총 {len(found)}개의 즐겨찾기")
+
+
+# ---------- 메뉴 ----------
+
+MENU = [
+    ("1", "프롬프트 추가", add_prompt),
+    ("2", "프롬프트 목록", show_list),
+    ("3", "카테고리별 조회", show_by_category),
+    ("4", "프롬프트 검색", search_prompt),
+    ("5", "프롬프트 상세 보기", show_detail),
+    ("6", "즐겨찾기 추가/해제", toggle_favorite),
+    ("7", "즐겨찾기 목록", show_favorites),
+]
 
 
 def show_menu():
     """메뉴를 출력한다."""
     print()
     print("=== 프롬프트 관리 프로그램 (에너지인력양성센터) ===")
-    print("1. 프롬프트 추가")
-    print("2. 프롬프트 목록")
-    print("3. 카테고리별 조회")
-    print("4. 프롬프트 검색")
-    print("5. 프롬프트 상세 보기")
-    print("6. 즐겨찾기 추가/해제")
-    print("7. 즐겨찾기 목록")
+    for number, name, _ in MENU:
+        print(f"{number}. {name}")
     print("0. 종료")
 
 
 def main():
     """메뉴를 반복 출력하고 번호에 맞는 기능을 실행한다."""
-    # 번호 → 기능 함수. 기능은 다음 커밋부터 하나씩 채운다.
-    actions = {
-        "1": add_prompt,
-        "2": show_list,
-        "3": show_by_category,
-        "4": search_prompt,
-        "5": show_detail,
-        "6": toggle_favorite,
-        "7": show_favorites,
-    }
+    actions = {number: func for number, _, func in MENU}
     while True:
         show_menu()
         choice = input("선택: ").strip()

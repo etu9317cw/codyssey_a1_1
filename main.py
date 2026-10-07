@@ -86,6 +86,47 @@ PROMPTS = [
 ]
 
 
+def input_required(label):
+    """빈 값이면 다시 입력을 요청한다."""
+    while True:
+        value = input(label).strip()
+        if value:
+            return value
+        print("비어 있습니다. 다시 입력하세요.")
+
+
+def add_prompt():
+    """제목·내용·카테고리를 입력받아 새 프롬프트를 리스트에 추가한다."""
+    print()
+    print("=== 프롬프트 추가 ===")
+    title = input_required("제목: ")
+    content = input_required("내용: ")
+
+    print()
+    print("카테고리 선택:")
+    for i, name in enumerate(CATEGORIES, start=1):
+        print(f"{i}) {name}")
+    print(f"{len(CATEGORIES) + 1}) 직접 입력")
+    while True:
+        choice = input("선택: ").strip()
+        if choice.isdigit() and 1 <= int(choice) <= len(CATEGORIES):
+            category = CATEGORIES[int(choice) - 1]
+            break
+        if choice == str(len(CATEGORIES) + 1):
+            category = input_required("카테고리 이름: ")
+            break
+        print("잘못된 번호입니다. 다시 선택하세요.")
+
+    PROMPTS.append({
+        "title": title,
+        "content": content,
+        "category": category,
+        "favorite": False,
+    })
+    print()
+    print(f"'{title}' 프롬프트가 추가되었습니다! (현재 {len(PROMPTS)}개)")
+
+
 def show_menu():
     """메뉴를 출력한다."""
     print()
@@ -103,7 +144,9 @@ def show_menu():
 def main():
     """메뉴를 반복 출력하고 번호에 맞는 기능을 실행한다."""
     # 번호 → 기능 함수. 기능은 다음 커밋부터 하나씩 채운다.
-    actions = {}
+    actions = {
+        "1": add_prompt,
+    }
     while True:
         show_menu()
         choice = input("선택: ").strip()

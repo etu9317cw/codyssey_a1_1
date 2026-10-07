@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 환경 변수·비밀 정보
+.env
+
+# 편집기·OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 작업 메모(제출 대상 아님)
+_작업파일/
+TASK.md

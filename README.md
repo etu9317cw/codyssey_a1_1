@@ -12,8 +12,8 @@
 Python 3.10 이상이 필요합니다(개발 환경: Python 3.14.7, Windows 11).
 
 ```
-git clone https://github.com/etu9317cw/<저장소 이름>.git
-cd <저장소 이름>
+git clone https://github.com/etu9317cw/codyssey_a1_1.git
+cd codyssey_a1_1
 python main.py
 ```
 

@@ -124,3 +124,9 @@ Git 전역 설정 (`user.name`, `user.email`, 기본 브랜치 `main`, `core.aut
 프롬프트 검색 — `회의록`이 제목 또는 내용에 들어간 프롬프트 3개
 
 ![프롬프트 검색](images/06_search.png)
+
+### Git 커밋 그래프
+
+`git log --oneline --graph` — 기능 단위 커밋, `feature/list` 브랜치 분기와 `main` 병합, GitHub 웹 수정 후 `git pull`까지
+
+![git log --oneline --graph](images/07_git_log_graph.png)

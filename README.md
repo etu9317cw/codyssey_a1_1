@@ -92,6 +92,7 @@ python -X utf8 main.py
 ## Git 작업 기록
 
 - 기능 단위로 커밋(한국어 메시지), `feature/list` 브랜치에서 목록 기능을 만든 뒤 `main`에 `--no-ff`로 병합
+- GitHub 웹에서 README를 고친 커밋을 `git pull`로 로컬 저장소에 내려받아 반영
 - `git log --oneline --graph` 결과는 아래 "제출 스크린샷" 절 참고
 
 ## 제출 스크린샷

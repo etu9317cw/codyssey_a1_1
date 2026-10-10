@@ -93,3 +93,33 @@ python -X utf8 main.py
 
 - 기능 단위로 커밋(한국어 메시지), `feature/list` 브랜치에서 목록 기능을 만든 뒤 `main`에 `--no-ff`로 병합
 - `git log --oneline --graph` 결과는 아래 "제출 스크린샷" 절 참고
+
+## 제출 스크린샷
+
+### 개발 환경 설정
+
+VSCode 통합 터미널에서 Python·Git 버전 확인 (Python 3.14.7, Git 2.55.0)
+
+![VSCode와 Python·Git 버전](images/01_vscode_version.png)
+
+Git 전역 설정 (`user.name`, `user.email`, 기본 브랜치 `main`, `core.autocrlf=false`, 이메일 앞 숫자는 가림)
+
+![git config --global --list](images/02_git_config.png)
+
+### 프로그램 실행 결과
+
+메뉴 (`python main.py`)
+
+![메뉴](images/03_menu.png)
+
+프롬프트 추가 — 빈 제목은 다시 입력 요청, 카테고리는 번호로 선택
+
+![프롬프트 추가](images/04_add.png)
+
+프롬프트 목록 — 기본 5개 + 방금 추가한 1개, 즐겨찾기 ⭐ 표시
+
+![프롬프트 목록](images/05_list.png)
+
+프롬프트 검색 — `회의록`이 제목 또는 내용에 들어간 프롬프트 3개
+
+![프롬프트 검색](images/06_search.png)

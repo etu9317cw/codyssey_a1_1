@@ -12,7 +12,3 @@ venv/
 .idea/
 .DS_Store
 Thumbs.db
-
-# 작업 메모(제출 대상 아님)
-_작업파일/
-TASK.md

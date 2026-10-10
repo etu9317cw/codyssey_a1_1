@@ -79,20 +79,17 @@ python -X utf8 main.py
 ```
 .
 ├── main.py              # 프로그램 전체 (데이터·헬퍼·기능 함수·메뉴)
-├── prompts.json         # 보너스 1 저장 파일 (기본 프롬프트 5개)
-├── prompts_export/      # 보너스 1 Markdown 내보내기 결과
-│   ├── 텍스트 생성.md
-│   ├── 페르소나.md
-│   └── 자동화.md
-├── hello.py             # 환경 점검용 print("Hello")
-├── 리포트_A1-1.md        # 미션 리포트 (환경 설정·Git·실행 결과·배운 점)
-├── 캡처_체크리스트.md     # 제출 캡처 목록
-├── 캡처/                # 캡처 이미지
+├── images/              # 제출 스크린샷
 ├── .gitignore
 └── README.md
 ```
 
+실행 중에 만들어지는 파일:
+
+- `prompts.json` — 메뉴 8(JSON 저장)로 생성, 다음 실행 때 자동으로 불러옴
+- `prompts_export/<카테고리>.md` — 메뉴 10(Markdown 내보내기)으로 생성
+
 ## Git 작업 기록
 
 - 기능 단위로 커밋(한국어 메시지), `feature/list` 브랜치에서 목록 기능을 만든 뒤 `main`에 `--no-ff`로 병합
-- 자세한 과정과 `git log --oneline --graph` 결과는 `리포트_A1-1.md` 4장 참고
+- `git log --oneline --graph` 결과는 아래 "제출 스크린샷" 절 참고
